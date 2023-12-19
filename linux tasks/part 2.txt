@@ -1,0 +1,122 @@
+#!/bin/bash
+
+# Function to get CPU information
+get_cpu_info() {
+    lscpu
+}
+
+# Function to get memory information
+get_memory_info() {
+    free
+}
+
+# Function to create a new user
+create_new_user() {
+    if [ -z "$1" ]; then
+        echo "Error: Username not provided."
+    else
+        sudo adduser "$1"
+    fi
+}
+
+# Function to list all regular users
+list_regular_users() {
+    cut -d: -f1 /etc/passwd
+}
+
+# Function to list users with sudo permissions
+list_sudo_users() {
+    grep -Po '^sudo.+:\K.*$' /etc/group | tr ',' '\n'
+}
+
+# Function to get file information
+get_file_info() {
+    file="$2"
+    case "$1" in
+        "--size" | "-s")
+            stat -c '%s' "$file"
+            ;;
+        "--permissions" | "-p")
+            stat -c '%A' "$file"
+            ;;
+        "--owner" | "-o")
+            stat -c '%U' "$file"
+            ;;
+        "--last-modified" | "-m")
+            stat -c '%y' "$file"
+            ;;
+        *)
+            echo "Invalid option. Usage: internsctl file getinfo [options] <file-name>"
+            ;;
+    esac
+}
+
+# Display usage information
+display_usage() {
+    echo "Usage: internsctl <operation> <sub-operation> [options] [arguments]"
+    echo "Operations:"
+    echo "  cpu          Perform CPU-related operations"
+    echo "  memory       Perform memory-related operations"
+    echo "  user         Manage user accounts"
+    echo "  file         Get information about a file"
+}
+
+# Check for command-line arguments
+if [ "$#" -eq 0 ]; then
+    display_usage
+    exit 1
+fi
+
+# Check for operations
+case "$1" in
+    "cpu")
+        case "$2" in
+            "getinfo")
+                get_cpu_info
+                ;;
+            *)
+                echo "Invalid usage. Use 'internsctl cpu getinfo'"
+                ;;
+        esac
+        ;;
+    "memory")
+        case "$2" in
+            "getinfo")
+                get_memory_info
+                ;;
+            *)
+                echo "Invalid usage. Use 'internsctl memory getinfo'"
+                ;;
+        esac
+        ;;
+    "user")
+        case "$2" in
+            "create")
+                create_new_user "$3"
+                ;;
+            "list")
+                if [ "$3" == "--sudo-only" ]; then
+                    list_sudo_users
+                else
+                    list_regular_users
+                fi
+                ;;
+            *)
+                echo "Invalid usage. Use 'internsctl user create <username>', 'internsctl user list', or 'internsctl user list --sudo-only'"
+                ;;
+        esac
+        ;;
+    "file")
+        case "$2" in
+            "getinfo")
+                get_file_info "$3" "$4"
+                ;;
+            *)
+                echo "Invalid usage. Use 'internsctl file getinfo [options] <file-name>'"
+                ;;
+        esac
+        ;;
+    *)
+        echo "Invalid command. Use 'internsctl --help' for usage information."
+        ;;
+esac

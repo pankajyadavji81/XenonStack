@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Function to display manual page
+display_manual() {
+    echo -e "\e[1mINTENSCTL(1)                           User Commands                           INTENSCTL(1)\e[0m"
+    echo -e "\e[1mNAME\e[0m"
+    echo "       \e[96minternsctl - Custom Linux command for operations\e[0m"
+    echo ""
+    echo -e "\e[1mSYNOPSIS\e[0m"
+    echo "       \e[96minternsctl [OPTIONS]\e[0m"
+    echo ""
+    echo -e "\e[1mDESCRIPTION\e[0m"
+    echo "       \e[96minternsctl is a custom Linux command that performs various operations.\e[0m"
+    echo ""
+    # Add more detailed description and usage guidelines here
+}
+
+# Function to display help
+display_help() {
+    echo -e "\e[1mUsage:\e[0m \e[96minternsctl [OPTIONS]\e[0m"
+    echo ""
+    echo -e "\e[1mOptions:\e[0m"
+    echo "  \e[96m--help\e[0m      Display help information"
+    echo "  \e[96m--version\e[0m   Display command version"
+    # Add more usage examples and explanations here
+}
+
+# Function to display version
+display_version() {
+    echo -e "\e[1minternsctl v\e[0m\e[96m0.1.0\e[0m"
+}
+
+# Check for arguments
+if [ "$#" -eq 0 ]; then
+    display_manual
+elif [ "$1" == "--help" ]; then
+    display_help
+elif [ "$1" == "--version" ]; then
+    display_version
+else
+    echo -e "\e[91mInvalid option.\e[0m Use --help for usage information."
+fi
